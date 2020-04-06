@@ -63,5 +63,9 @@ Route::prefix('admin-api')
                 ->except(['store', 'show', 'create']);
             Route::put('system-media', 'SystemMediaController@batchUpdate')->name('system-media.batch.update');
             Route::delete('system-media', 'SystemMediaController@batchDestroy')->name('system-media.batch.destroy');
+
+
+            //订单
+            Route::get('order/detail', 'Order\OrderDetailController@show')->name('order.detail.show');
         });
     });
