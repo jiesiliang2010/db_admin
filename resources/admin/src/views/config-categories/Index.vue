@@ -136,6 +136,7 @@ export default {
   watch: {
     $route: {
       async handler(newVal) {
+        console.log('newVal:', newVal)
         const { data: { data, meta } } = await getConfigCategories(newVal.query)
         this.cates = data
         this.page = meta
