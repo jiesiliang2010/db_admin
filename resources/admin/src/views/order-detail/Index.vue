@@ -6,27 +6,15 @@
         <div>
           <span class="order-status">订单最新状态</span>
           <el-button type="primary" @click="showLog()" :loading="isLoadingLog">查看日志</el-button>
-          <pop-confirm
-            type="warning"
-            plain
-            notice="确认退货吗？"
-          >
-            退货
-          </pop-confirm>
-          <pop-confirm
-            type="danger"
-            plain
-            notice="确认直接退款吗？"
-          >
-            直接退款
-          </pop-confirm>
+          <el-button type="warning" plain @click="returnFormVisible = true">退货</el-button>
+          <el-button type="danger" plain @click="returnMoneyFormVisible = true">直接退款</el-button>
         </div>
       </div>
     </template>
     <el-container>
       <div style="flex: 1;">
         <!-- 订单详情 -->
-        <el-form ref="form" :inline="true" label-width="100px">
+        <el-form ref="form" :inline="true" label-width="90px">
           <el-form-item label="订单号">
             <el-input :value="orderDetail.orderNo" placeholder="订单号"/>
           </el-form-item>
@@ -36,14 +24,14 @@
           <el-form-item label="订单金额">
             <el-input :value="orderDetail.orderMoney" placeholder="订单金额"/>
           </el-form-item>
+          <el-form-item label="订单底价">
+            <el-input :value="orderDetail.orderBaseMoney" placeholder="订单底价"/>
+          </el-form-item>
           <el-form-item label="联系人">
             <el-input :value="orderDetail.contact" placeholder="联系人"/>
           </el-form-item>
           <el-form-item label="联系手机">
             <el-input :value="orderDetail.tel" placeholder="联系手机"/>
-          </el-form-item>
-          <el-form-item label="订单底价">
-            <el-input :value="orderDetail.orderBaseMoney" placeholder="订单底价"/>
           </el-form-item>
           <el-form-item label="收货地址" size="medium">
             <el-input :value="orderDetail.address" placeholder="收货地址" style="width: 340px;"/>
@@ -100,6 +88,7 @@
       </div>
     </el-container>
 
+    <!-- 订单操作日志 -->
     <el-dialog title="订单操作日志" :visible.sync="showLogDialog">
       <el-table :data="logData" style="max-height: 400px; overflow-y: scroll;">
         <el-table-column property="date" label="日期"/>
@@ -107,6 +96,56 @@
         <el-table-column property="remark" label="备注"/>
         <el-table-column property="people" label="操作人"/>
       </el-table>
+    </el-dialog>
+
+    <!-- 退款弹窗 -->
+    <el-dialog title="退款" width="30%" center :visible.sync="returnMoneyFormVisible">
+      <el-form :model="returnMoneyForm" label-width="80px">
+        <el-form-item label="退款金额">
+          <el-input v-model="returnMoneyForm.money" autofocus/>
+        </el-form-item>
+        <el-form-item label="退款理由">
+          <el-input type="textarea" v-model="returnMoneyForm.reason"/>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="returnMoneyFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="returnMoneyFormVisible = false">确 定</el-button>
+      </div>
+    </el-dialog>
+
+    <!-- 退货弹窗 -->
+    <el-dialog title="赔款单" width="30%" center :visible.sync="returnFormVisible">
+      <el-form :model="returnForm" label-width="60px">
+        <el-form-item label="商家">
+          <el-select v-model="returnForm.merchants" placeholder="请选择商家">
+            <el-option label="商家一" value="shanghai"/>
+            <el-option label="商家二" value="beijing"/>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="店铺">
+          <el-select v-model="returnForm.shop" placeholder="请选择店铺">
+            <el-option label="店铺一" value="shanghai"/>
+            <el-option label="店铺二" value="beijing"/>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="金额">
+          <el-input v-model="returnForm.money"/>
+        </el-form-item>
+        <el-form-item label="原因">
+          <el-input type="textarea" v-model="returnForm.reason"/>
+        </el-form-item>
+        <el-form-item label="承担方">
+          <el-radio-group v-model="returnForm.resource">
+            <el-radio label="商家"/>
+            <el-radio label="公司"/>
+          </el-radio-group>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="returnFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="returnFormVisible = false">确 定</el-button>
+      </div>
     </el-dialog>
   </el-card>
 </template>
@@ -194,6 +233,16 @@ export default {
       showLogDialog: false,
       logData: [],
       isLoadingLog: false,
+      returnMoneyFormVisible: false,
+      returnMoneyForm: {
+        money: '',
+        reason: '',
+      },
+      returnFormVisible: false,
+      returnForm: {
+        money: '',
+        reason: '',
+      },
     }
   },
   methods: {
