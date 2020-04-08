@@ -13,6 +13,12 @@ use Illuminate\Support\Facades\Storage;
 
 class Controller extends BaseController
 {
+
+    public function __construct()
+    {
+        error_reporting(E_ALL^E_WARNING^E_NOTICE);
+    }
+
     /**
      * 传入上传目录的字段
      */
