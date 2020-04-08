@@ -24,4 +24,7 @@ export default {
   'configs/create': () => import('@v/configs/Form'),
   'configs/:id(\\d+)/edit': () => import('@v/configs/Form'),
   'configs/:categorySlug': () => import('@v/configs/ConfigValuesForm'),
+  //订单列表
+  'order-list': () => import('@v/order-list/Index'),
+  'order-detail/:id(\\d+)': () => import('@v/order-detail/Index'),
 }

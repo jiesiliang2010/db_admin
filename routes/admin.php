@@ -64,8 +64,19 @@ Route::prefix('admin-api')
             Route::put('system-media', 'SystemMediaController@batchUpdate')->name('system-media.batch.update');
             Route::delete('system-media', 'SystemMediaController@batchDestroy')->name('system-media.batch.destroy');
 
-
             //订单
-            Route::get('order/detail', 'Order\OrderDetailController@show')->name('order.detail.show');
+            Route::get('order/detail/{id?}', 'Order\OrderDetailController@show')->name('order.detail.show');
+            //Route::get('order-list', 'Order\OrderListController@list')->name('order.list.list');
+            Route::any('order-list/{order_info?}',array(
+                'as' => 'order.list.search',
+                'uses' => 'Order\OrderListController@list'
+            ));
+            //Route::get('order/detail/{id?}', 'Order\OrderDetailController@show')->name('order.detail.show');
+            //Route::get('order-list', 'Order\OrderListController@list')->name('order.list.list');
+            /*Route::any('order-detail/{id}',array(
+                'as' => 'order.list.detail',
+                'uses' => 'Order\OrderDetailController@show'
+            ));*/
         });
     });
+
