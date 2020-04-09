@@ -81,6 +81,7 @@ class SalemanController extends Controller
         $insert ['salesman_id'] = $request->input("salesman_id");
         $insert['type'] = $request->input("type");
         $insert['operator_id'] = Auth::guard("admin")->id();
+        $insert['remark'] = $request->input("remark");
 
         $save['status'] = $insert['type']!=3?:1;
 
