@@ -62,10 +62,6 @@ class SalemanController extends Controller
     public function detail(Request $request){
         $where['salesman_no'] = $request->input("salesman_no");
 
-        $query = DB::table("salesman as e");
-
-        $query = $this->filter($query,$where);
-
         $query = DB::table("salesman as a");
 
         $query = $this->filter($query,$where);
@@ -82,8 +78,21 @@ class SalemanController extends Controller
         $insert['type'] = $request->input("type");
         $insert['operator_id'] = Auth::guard("admin")->id();
         $insert['remark'] = $request->input("remark");
+        $insert['measures'] = $request->input("measures");
 
         $save['status'] = $insert['type']!=3?:1;
+
+        switch ($insert['measures']){
+            case 1:
+                $save["end_time"] = strtotime("+24 hour");
+                break;
+            case 2:
+                $save["end_time"] = strtotime("+1 week");
+                break;
+            case 3:
+                $save["end_time"] = strtotime("+100 week");
+                break;
+        }
 
         DB::beginTransaction();
         $save_res = DB::table("salesman")

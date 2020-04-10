@@ -76,4 +76,16 @@ class Controller extends BaseController
 
         return $files;
     }
+
+    //obj转数组
+    protected function objToArr($array) {
+        if(is_object($array)) {
+            $array = (array)$array;
+        } if(is_array($array)) {
+            foreach($array as $key=>$value) {
+                $array[$key] = $this->objToArr($value);
+            }
+        }
+        return $array;
+    }
 }
