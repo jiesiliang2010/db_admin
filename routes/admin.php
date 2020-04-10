@@ -37,6 +37,8 @@ Route::prefix('admin-api')
 
             Route::resource('config-categories', 'ConfigCategoryController')->except(['show', 'create']);
 
+//            Route::get('config-categories', 'ConfigCategoryController@index')->name('c.i');
+
             Route::get('configs/vue-routers', 'ConfigController@vueRouters')->name('configs.vue-routers');
             Route::put('configs/values', 'ConfigController@updateValues')->name('configs.update-values');
             Route::resource('configs', 'ConfigController')->except(['show']);
@@ -66,6 +68,6 @@ Route::prefix('admin-api')
 
 
             //订单
-            Route::get('order/detail', 'Order\OrderDetailController@show')->name('order.detail.show');
+            Route::get('order/detail/{order_id}', 'Order\OrderDetailController@show')->name('order.detail.show');
         });
     });

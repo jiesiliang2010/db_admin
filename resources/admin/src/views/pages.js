@@ -25,6 +25,8 @@ export default {
   'configs/:id(\\d+)/edit': () => import('@v/configs/Form'),
   'configs/:categorySlug': () => import('@v/configs/ConfigValuesForm'),
 
+
   'order-list': () => import('@v/order-list/Index'),
-  'order-detail/:id(\\d+)': () => import('@v/order-detail/Index'),
+  'order-detail/:id(\\d+)': () => import('@v/order/detail/Index'),
+
 }

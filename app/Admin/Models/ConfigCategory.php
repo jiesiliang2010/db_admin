@@ -4,6 +4,9 @@ namespace App\Admin\Models;
 
 class ConfigCategory extends Model
 {
+
+    protected $table = 'cbd_config_categories';
+
     protected $fillable = ['name', 'slug'];
 
     public function configs()

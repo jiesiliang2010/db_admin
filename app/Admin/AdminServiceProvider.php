@@ -2,6 +2,7 @@
 
 namespace App\Admin;
 
+use App\Admin\Console\Commands\ResourceMakeCommand;
 use App\Admin\Middleware\AdminPermission;
 use App\Admin\Utils\Admin;
 use Illuminate\Support\Facades\Route;
@@ -27,6 +28,7 @@ class AdminServiceProvider extends ServiceProvider
     protected $commands = [
         Console\Commands\AdminInitCommand::class,
         Console\Commands\ResourceMakeCommand::class,
+        Console\Commands\ModuleMakeCommand::class,
     ];
 
     /**

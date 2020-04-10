@@ -105,7 +105,8 @@ trait HasPermissions
     public function visible($roles = [])
     {
         if (empty($roles)) {
-            return true;
+//            return true;
+            return $this->isAdministrator(); //对于未分配角色的前端路由默认改为只授权admin(自适应菜单)
         }
 
         $roles = array_column($roles, 'slug');

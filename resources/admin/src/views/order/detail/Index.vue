@@ -163,16 +163,16 @@ export default {
   data() {
     return {
       orderDetail: {
-        orderNo: '23209',
-        orderDate: '2019-12-23 16:30:05',
-        orderMoney: '232',
-        contact: '小鱼',
-        tel: '13809882733',
-        orderBaseMoney: '40',
-        address: '上海市普陀区金沙江路 1518 弄',
-        recipient: '小鱼',
-        salesman: '大虾',
-        distribution: '顺丰快递',
+        orderNo: '',
+        orderDate: '',
+        orderMoney: '',
+        contact: '',
+        tel: '',
+        orderBaseMoney: '',
+        address: '',
+        recipient: '',
+        salesman: '',
+        distribution: '',
       },
       orderGoods: [{
         id: 1,
@@ -245,7 +245,7 @@ export default {
   },
   methods: {
     async showLog() {
-      this.isLoadingLog = true
+      // this.isLoadingLog = true
       // console.log(this.$route.params.id)
       // const { data } = await getOrderLog(this.$route.params.id)
 
@@ -268,53 +268,53 @@ export default {
       this.showLogDialog = true
       this.isLoadingLog = false
     },
-      paseOrderInfo(order){
-          return {
-              orderNo: order.order_no,
-              orderDate: order.create_date,
-              orderMoney: order.amount,
-              contact: order.receiver,
-              tel: order.phone,
-              orderBaseMoney: order.base_amount,
-              address: order.receiver_address,
-              recipient: order.receiver,
-              salesman: '大虾',
-              distribution: order.trans_type,
-          };
-      },
-      paseGoodsDetail(detailList){
-          let struct = []
-          detailList.forEach((i) => {
-              let shop = {
-                  id: i.supplier_name,
-                  supplierName: i.supplier_name,
-                  shopName: i.shop_name,
-                  goods:[],
-              };
-              i.goodList.forEach((v) => {
-                  shop.goods.push({
-                      id: v.goods_id,
-                      spec: v.spec_attr,
-                      num: v.num,
-                      money: v.goods_amount,
-                      lowMoney: v.supplier_amount,
-                      saleMoney: v.discount_amount,
-                      guideMan: v.guide_name,
-                  })
-              })
-              struct.push(shop)
-          })
-          return struct
-      },
+    paseOrderInfo(order){
+        return {
+            orderNo: order.order_no,
+            orderDate: order.create_date,
+            orderMoney: order.amount,
+            contact: order.receiver,
+            tel: order.phone,
+            orderBaseMoney: order.base_amount,
+            address: order.receiver_address,
+            recipient: order.receiver,
+            distribution: order.trans_type,
+        };
+    },
+    paseGoodsDetail(detailList){
+        let struct = []
+        detailList.forEach((i) => {
+            let shop = {
+                id: i.supplier_name,
+                supplierName: i.supplier_name,
+                shopName: i.shop_name,
+                goods:[],
+            };
+            i.goodList.forEach((v) => {
+                shop.goods.push({
+                    id: v.goods_id,
+                    spec: v.spec_attr,
+                    num: v.num,
+                    money: v.goods_amount,
+                    lowMoney: v.supplier_amount,
+                    saleMoney: v.discount_amount,
+                    guideMan: v.guide_name,
+                })
+            })
+            struct.push(shop)
+        })
+        return struct
+    },
   },
   watch: {
     $route: {
       async handler(newVal) {
         // console.log(newVal.params.id)
-        // const { data } = await getOrderDetail(newVal.params.id)
-        // 将请求结果赋值
+        const { data } = await getOrderDetail(newVal.params.id)
+          // console.log(data.detailList);
           this.orderDetail = this.paseOrderInfo(data.order);
           this.orderGoods = this.paseGoodsDetail(data.detailList);
+        // 将请求结果赋值
       },
       immediate: true,
     },

@@ -13,5 +13,7 @@ class AdminPermission extends PermissionMiddleware
         '/user/edit',
         '/configs/vue-routers',
         '/configs/system_basic/values',
+        '/index', //首页给所有人
+        '/order/detail',
     ];
 }
