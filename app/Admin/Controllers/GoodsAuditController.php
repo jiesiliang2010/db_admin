@@ -92,42 +92,22 @@ class GoodsAuditController extends Controller
         return $this->ok($goods);
     }
 
-    //处理商品状态,记录日志   //写到这
+    //处理商品状态,记录操作人
     public function update(Request $request){
-        $insert ['salesman_id'] = $request->input("salesman_id");
-        $insert['type'] = $request->input("type");
-        $insert['operator_id'] = Auth::guard("admin")->id();
-        $insert['remark'] = $request->input("remark");
-        $insert['measures'] = $request->input("measures");
+        $where['goods_no'] = $request->input("goods_no");
+        $save['state'] = $request->input("goods_no");
+        $save['operator_id'] = Auth::guard("admin")->id();
 
-        $save['status'] = $insert['type']!=3?:1;
-
-        switch ($insert['measures']){
-            case 1:
-                $save["end_time"] = strtotime("+24 hour");
-                break;
-            case 2:
-                $save["end_time"] = strtotime("+1 week");
-                break;
-            case 3:
-                $save["end_time"] = strtotime("+100 year");
-                break;
+        if($save['state'] == 1){
+            $save['start_sale_at'] = time();
+        }else{
+            $save['stop_sale_at'] = time();
         }
 
-        DB::beginTransaction();
-        $save_res = DB::table("salesman")
-            ->where("id",$insert['salesman_id'])
+        $res = DB::table("goods")
+            ->whereIn("goods_no",$where['goods_no'])
             ->save($save);
 
-        $log_res = DB::table("salesman_log")
-            ->insert($insert);
-
-        if($save_res && $log_res){
-            DB::commit();
-            return $this->ok(1);
-        }
-
-        DB::rollBack();
-        return $this->error("操作失败");
+        return $this->ok($res);
     }
 }
