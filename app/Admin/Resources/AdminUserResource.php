@@ -20,7 +20,6 @@ class AdminUserResource extends JsonResource
     {
         /** @var AdminUser $model */
         $model = $this->resource;
-
         return [
             'id' => $model->id,
             'username' => $model->username,

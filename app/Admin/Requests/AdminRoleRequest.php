@@ -19,6 +19,8 @@ class AdminRoleRequest extends FormRequest
             'slug' => 'required|unique:admin_roles,slug,'.$id,
             'permissions' => 'array',
             'permissions.*' => 'exists:admin_permissions,id',
+            'departments' => 'array',
+            'departments' => 'exists:admin_departments,id'
         ];
         if ($this->isMethod('put')) {
             $rules = Arr::only($rules, $this->keys());
@@ -33,6 +35,8 @@ class AdminRoleRequest extends FormRequest
             'slug' => '标识',
             'permissions' => '权限',
             'permissions.*' => '权限',
+            'departments' => '部门',
+            'departments.*' => '部门'
         ];
     }
 }

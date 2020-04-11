@@ -14,6 +14,8 @@ class VueRoutersAddPermissionColumn extends Migration
     public function up()
     {
         Schema::table('vue_routers', function (Blueprint $table) {
+            $table->charset = 'utf8';
+            $table->collation = 'utf8_general_ci';
             $table->string('permission', 50)->nullable();
         });
     }

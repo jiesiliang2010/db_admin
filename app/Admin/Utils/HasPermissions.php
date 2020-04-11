@@ -6,25 +6,43 @@
 namespace App\Admin\Utils;
 
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redis;
+use App\Admin\Traits\PublicHelpers;
 
 trait HasPermissions
 {
+    use PublicHelpers;
+
     /**
-     * 获取所有权限, 包含角色中的
-     *
-     * @return Collection
+     * 获取当前账户的所有权限
+     * @return object
+     * @throws \Exception
      */
     public function allPermissions()
     {
-        return $this
-            ->roles()
-            ->with('permissions')
-            ->get()
-            ->pluck('permissions')
-            ->flatten()
-            ->merge($this->permissions)
-            ->unique('id')
-            ->values();
+        $cacheKey = $this->replaceCachePrefix(config('rediskeys.PERMISSION_KEY'), ['{USER_ID}'=>Auth::guard('admin')->id()]);
+        if (!Redis::exists($cacheKey)) {
+            $permissions =  $this
+                ->roles()
+                ->with('permissions')
+                ->get()
+                ->pluck('permissions')
+                ->flatten()
+                ->merge($this->permissions)
+                ->unique('id')
+                ->values();
+            if (!count($permissions)) {
+                //空结果集记入缓存30秒,防止缓存穿透
+                Redis::SETEX($cacheKey, 30, serialize($permissions));
+            } else {
+                //非空结果集以1-5分钟内随机有效期记入缓存进行查询削峰，防止缓存雪崩
+                Redis::SETEX($cacheKey, random_int(60, 300), serialize($permissions));
+            }
+            return $permissions;
+        } else {
+            return $permissionCache = unserialize(Redis::GET($cacheKey));
+        }
     }
 
     /**

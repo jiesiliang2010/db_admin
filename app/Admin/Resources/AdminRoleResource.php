@@ -16,6 +16,7 @@ class AdminRoleResource extends JsonResource
             'name' => $model->name,
             'slug' => $model->slug,
             'permissions' => AdminPermissionResource::collection($this->whenLoaded('permissions')),
+            'departments' => AdminDepartmentResource::collection($this->whenLoaded('departments')),
             'created_at' => (string) $model->created_at,
             'updated_at' => (string) $model->updated_at,
         ];

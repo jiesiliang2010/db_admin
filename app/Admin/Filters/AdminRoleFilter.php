@@ -11,6 +11,7 @@ class AdminRoleFilter extends Filter
         'id',
         'name' => ['like', '%?%'],
         'slug' => ['like', '%?%'],
+        'department' => ['like', '%?%'],
     ];
     protected $filters = ['permission_name'];
 }

@@ -14,6 +14,8 @@ class CreateVueRoutersTable extends Migration
     public function up()
     {
         Schema::create('vue_routers', function (Blueprint $table) {
+            $table->charset = 'utf8';
+            $table->collation = 'utf8_general_ci';
             $table->increments('id');
             $table->unsignedInteger('parent_id')->default(0);
             $table->string('title', 50);

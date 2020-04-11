@@ -16,7 +16,3 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
-
-Route::prefix('user-api')->group(function () {
-    Route::get('/user', function () {echo 111111;});
-});

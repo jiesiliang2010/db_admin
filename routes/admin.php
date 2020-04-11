@@ -44,6 +44,9 @@ Route::prefix('admin-api')
             Route::get('configs/{category_slug}/values', 'ConfigController@getValuesByCategorySlug')
                 ->name('configs.values.by-category-slug');
 
+            //部门管理
+            Route::resource('admin-departments', 'AdminDepartmentController')->except(['show']);
+
             Route::resource('system-media-categories', 'SystemMediaCategoryController')->except(['show', 'create']);
             // 在指定分类下，上传文件
             Route::post(

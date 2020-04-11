@@ -14,6 +14,8 @@ class CreateAdminPermissionsTable extends Migration
     public function up()
     {
         Schema::create('admin_permissions', function (Blueprint $table) {
+            $table->charset = 'utf8';
+            $table->collation = 'utf8_general_ci';
             $table->increments('id');
             $table->string('name', 50);
             $table->string('slug', 50);

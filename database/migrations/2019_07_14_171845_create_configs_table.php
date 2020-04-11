@@ -14,6 +14,8 @@ class CreateConfigsTable extends Migration
     public function up()
     {
         Schema::create('configs', function (Blueprint $table) {
+            $table->charset = 'utf8';
+            $table->collation = 'utf8_general_ci';
             $table->increments('id');
             $table->unsignedInteger('category_id')->index();
             $table->string('type')->default(\App\Admin\Models\Config::TYPE_INPUT);

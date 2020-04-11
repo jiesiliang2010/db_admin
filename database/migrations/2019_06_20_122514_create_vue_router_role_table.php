@@ -14,6 +14,8 @@ class CreateVueRouterRoleTable extends Migration
     public function up()
     {
         Schema::create('vue_router_role', function (Blueprint $table) {
+            $table->charset = 'utf8';
+            $table->collation = 'utf8_general_ci';
             $table->integer('vue_router_id')->index();
             $table->integer('role_id')->index();
         });
