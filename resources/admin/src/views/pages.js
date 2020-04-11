@@ -29,4 +29,6 @@ export default {
   'order-list': () => import('@v/order-list/Index'),
   'order-detail/:id(\\d+)': () => import('@v/order/detail/Index'),
 
+  'order-compensate': () => import('@v/order/compensate/Index'),
+
 }
