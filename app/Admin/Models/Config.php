@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Builder;
 
 class Config extends Model
 {
+
+    protected $table = 'configs';
+
     const TYPE_INPUT = 'input';
     const TYPE_TEXTAREA = 'textarea';
     const TYPE_FILE = 'file';

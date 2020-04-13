@@ -6,8 +6,8 @@
         <div>
           <span class="order-status">订单最新状态</span>
           <el-button type="primary" @click="showLog()" :loading="isLoadingLog">查看日志</el-button>
-          <el-button type="warning" plain @click="returnMoneyFormVisible = true">退货</el-button>
-          <el-button type="danger" plain @click="returnFormVisible = true;getCompensateReason();">直接退款</el-button>
+          <el-button type="warning" plain @click="returnFormVisible = true">退货</el-button>
+          <!--<el-button type="danger" plain @click="returnFormVisible = true;getCompensateReason();">直接退款</el-button>-->
         </div>
       </div>
     </template>
@@ -113,8 +113,11 @@
     </el-dialog>
 
     <!-- 退货弹窗 -->
-    <el-dialog title="赔款单" width="33%"  center :visible.sync="returnFormVisible">
+    <el-dialog title="用户赔款单" width="43%"  center :visible.sync="returnFormVisible">
       <el-form :model="returnForm" @submit.navite="newsubmit" label-width="83px">
+        <el-form-item>
+             子订单号:{{currentPageOrderNo}}     9393993    199398
+        </el-form-item>
         <el-form-item label="商家">
           <el-select v-model="returnForm.supplier_id" placeholder="请选择商家" @change="selectChange" >
             <el-option v-for="item in supplierInfo" :label="item.supplier_name" :value="item.supplier_id"/>
@@ -162,6 +165,7 @@
     </el-dialog>
   </el-card>
 </template>
+
 <script>
 import PopConfirm from '@c/PopConfirm'
 import {
@@ -180,7 +184,18 @@ export default {
   },
   data() {
     return {
-      orderDetail: {},
+      orderDetail: {
+        orderNo: '',
+        orderDate: '',
+        orderMoney: '',
+        contact: '',
+        tel: '',
+        orderBaseMoney: '',
+        address: '',
+        recipient: '',
+        salesman: '',
+        distribution: '',
+      },
       orderGoods: [{
         id: 1,
         supplierName: '苹果',
@@ -267,6 +282,7 @@ export default {
       compensateFormData:'',
       statisfySubmitAction :false,
       isHiddenCancel:true,
+      dataOrderSupplier:[],
       currentPageOrderNo:'',
     }
   },
@@ -278,7 +294,7 @@ export default {
   },
   methods: {
     async showLog() {
-      this.isLoadingLog = true
+      // this.isLoadingLog = true
       // console.log(this.$route.params.id)
       // const { data } = await getOrderLog(this.$route.params.id)
 
@@ -308,16 +324,17 @@ export default {
         order_id: this.currentPageOrderId
       })
       this.currentOrderShopInfo = data;
+      console.log(this.currentOrderShopInfo);
     },
     async getCompensateReason() {
       const { data } = await getCompensateReasonPost({})
       this.compensationReason = data;
     },
     compensateChooseReason(){
-        var reason_id = this.returnForm.compensate_reason;
-        if(reason_id == 1 || reason_id == 2){
-            this.returnForm.compensate_object =1;
-        }
+      var reason_id = this.returnForm.compensate_reason;
+      if(reason_id == 1 || reason_id == 2){
+        this.returnForm.compensate_object =1;
+      }
     },
     async asyncOrderCompensate() {
       const { data } = await doOrderCompensate(this.compensateFormData);
@@ -331,112 +348,114 @@ export default {
       this.asyncOrderCompensate();
     },
     onSubmit() {
-         var supplier_id = this.returnForm.supplier_id;
-         var shop_id = this.returnForm.shop_id;
-         var reason_id = this.returnForm.compensate_reason;
-         var compensate_describe = this.returnForm.compensate_describe.trim();
-         var compensate_amount = this.returnForm.compensate_amount;
-         var compenate_object = this.returnForm.compensate_object ;
-         var order_id = this.currentPageOrderId;
-         var audit_state = 0;
-          this.compensateFormData = {
-            'supplier_id':supplier_id,
-            'shop_id':shop_id,
-            'reason_id':reason_id,
-            'compensate_describe':compensate_describe,
-            'compensate_amount':compensate_amount,
-            'compenate_object':compenate_object,
-            'order_id':order_id,
-            'audit_state':audit_state,
-          };
-         if(!supplier_id) {this.compensateDescTips = '请选择商家';this.centerDialogVisible = true;return false;};
-         if(!shop_id) {this.compensateDescTips = '请选择店铺';this.centerDialogVisible = true;return false;};
-         if(!reason_id) {this.compensateDescTips = '请选择赔款原因';this.centerDialogVisible = true;return false;};
-         if(reason_id != '' && reason_id != 1 && reason_id !=2 && compensate_describe == '')
-         {
-              this.compensateDescTips = '请填写赔款描述';
-              this.centerDialogVisible = true;
-              return false;
-         }
-        if(!compensate_amount) {this.compensateDescTips = '请选择赔款金额';this.centerDialogVisible = true;return false;};
-        if(!compenate_object) {this.compensateDescTips = '请选择赔款承担方';this.centerDialogVisible = true;return false;};
-        var compensateAmountThreshold = this.compensateAmountThreshold;
-         if(compensate_amount < compensateAmountThreshold && compenate_object == 1){
-           this.isHiddenCancel = false;
-           this.statisfySubmitAction = true;
-           this.compensateDescTips = this.supplierUndertakeNotExceed;
-           this.centerDialogVisible = true;
-           return false;
-         }
-        if(compensate_amount >= compensateAmountThreshold && compenate_object == 1){
-          this.isHiddenCancel = false;
-          this.statisfySubmitAction = true;
-          this.compensateDescTips = this.supplierUndertakeExceed;
-          this.centerDialogVisible = true;
-          this.compensateFormData.audit_state = 1;
-          return false;
-        }
-        if(compenate_object == 2){
-            //此处表示平台承担
-            this.isHiddenCancel = false;
-            this.statisfySubmitAction = true;
-            this.compensateDescTips = this.platformUndertakeTips;
-            this.centerDialogVisible = true;
-            this.compensateFormData.audit_state = 1;
-        }
+      var supplier_id = this.returnForm.supplier_id;
+      var shop_id = this.returnForm.shop_id;
+      var reason_id = this.returnForm.compensate_reason;
+      var compensate_describe = this.returnForm.compensate_describe.trim();
+      var compensate_amount = this.returnForm.compensate_amount;
+      var compenate_object = this.returnForm.compensate_object ;
+      var order_id = this.currentPageOrderId;
+      var audit_state = 0;
+      this.compensateFormData = {
+        'supplier_id':supplier_id,
+        'shop_id':shop_id,
+        'reason_id':reason_id,
+        'compensate_describe':compensate_describe,
+        'compensate_amount':compensate_amount,
+        'compenate_object':compenate_object,
+        'order_id':order_id,
+        'audit_state':audit_state,
+      };
+      if(!supplier_id) {this.compensateDescTips = '请选择商家';this.centerDialogVisible = true;return false;};
+      if(!shop_id) {this.compensateDescTips = '请选择店铺';this.centerDialogVisible = true;return false;};
+      if(!reason_id) {this.compensateDescTips = '请选择赔款原因';this.centerDialogVisible = true;return false;};
+      if(reason_id != '' && reason_id != 1 && reason_id !=2 && compensate_describe == '')
+      {
+        this.compensateDescTips = '请填写赔款描述';
+        this.centerDialogVisible = true;
+        return false;
+      }
+      if(!compensate_amount) {this.compensateDescTips = '请选择赔款金额';this.centerDialogVisible = true;return false;};
+      if(!compenate_object) {this.compensateDescTips = '请选择赔款承担方';this.centerDialogVisible = true;return false;};
+      var compensateAmountThreshold = this.compensateAmountThreshold;
+      if(compensate_amount < compensateAmountThreshold && compenate_object == 1){
+        this.isHiddenCancel = false;
+        this.statisfySubmitAction = true;
+        this.compensateDescTips = this.supplierUndertakeNotExceed;
+        this.centerDialogVisible = true;
+        return false;
+      }
+      if(compensate_amount >= compensateAmountThreshold && compenate_object == 1){
+        this.isHiddenCancel = false;
+        this.statisfySubmitAction = true;
+        this.compensateDescTips = this.supplierUndertakeExceed;
+        this.centerDialogVisible = true;
+        this.compensateFormData.audit_state = 1;
+        return false;
+      }
+      if(compenate_object == 2){
+        //此处表示平台承担
+        this.isHiddenCancel = false;
+        this.statisfySubmitAction = true;
+        this.compensateDescTips = this.platformUndertakeTips;
+        this.centerDialogVisible = true;
+        this.compensateFormData.audit_state = 1;
+      }
     },
-      paseOrderInfo(order){
-          return {
-              orderNo: order.order_no,
-              orderDate: order.create_date,
-              orderMoney: order.amount,
-              contact: order.receiver,
-              tel: order.phone,
-              orderBaseMoney: order.base_amount,
-              address: order.receiver_address,
-              recipient: order.receiver,
-              salesman: '大虾',
-              distribution: order.trans_type,
-          };
-      },
-      paseGoodsDetail(detailList){
-          let struct = []
-          detailList.forEach((i) => {
-              let shop = {
-                  id: i.supplier_name,
-                  supplierName: i.supplier_name,
-                  shopName: i.shop_name,
-                  goods:[],
-              };
-              i.goodList.forEach((v) => {
-                  shop.goods.push({
-                      id: v.goods_id,
-                      spec: v.spec_attr,
-                      num: v.num,
-                      money: v.goods_amount,
-                      lowMoney: v.supplier_amount,
-                      saleMoney: v.discount_amount,
-                      guideMan: v.guide_name,
-                  })
-              })
-              struct.push(shop)
-          })
-          return struct
-      },
+    paseOrderInfo(order){
+      this.currentPageOrderNo = order.order_no;
+        return {
+            orderNo: order.order_no,
+            orderDate: order.create_date,
+            orderMoney: order.amount,
+            contact: order.receiver,
+            tel: order.phone,
+            orderBaseMoney: order.base_amount,
+            address: order.receiver_address,
+            recipient: order.receiver,
+            distribution: order.trans_type,
+        };
+    },
+    paseGoodsDetail(detailList){
+        let struct = []
+        detailList.forEach((i) => {
+            let shop = {
+                id: i.supplier_name,
+                supplierName: i.supplier_name,
+                shopName: i.shop_name,
+                goods:[],
+            };
+            i.goodList.forEach((v) => {
+                shop.goods.push({
+                    id: v.id,
+                    spec: v.spec_attr,
+                    num: v.num,
+                    money: v.goods_amount,
+                    lowMoney: v.supplier_amount,
+                    saleMoney: v.discount_amount,
+                    guideMan: v.guide_name,
+                })
+            })
+            struct.push(shop)
+        })
+        return struct
+    },
   },
   watch: {
     $route: {
       async handler(newVal) {
-         this.currentPageOrderId = newVal.params.id;
-        // const { data } = await getOrderDetail(newVal.params.id)
-        // 将请求结果赋值
+        // console.log(newVal.params.id)
+        this.currentPageOrderId = newVal.params.id;
+        const { data } = await getOrderDetail(newVal.params.id)
+          // console.log(data.detailList);
+          this.orderDetail = this.paseOrderInfo(data.order);
+          this.orderGoods = this.paseGoodsDetail(data.detailList);
         let param = {
           order_id: newVal.params.id
         };
-        const { data } = await getOrderSupplier(param);
-        this.supplierInfo = data;
-        this.orderDetail = this.paseOrderInfo(data.order);
-        this.orderGoods = this.paseGoodsDetail(data.detailList);
+        let dataOrderSupplier = await getOrderSupplier(param);
+        this.supplierInfo = dataOrderSupplier.data;
+        // 将请求结果赋值
       },
       immediate: true,
     },
@@ -450,12 +469,7 @@ export default {
   justify-content: space-between;
   align-items: center;
 }
-.pre-formatted {
-  white-space: pre;
-}
-.mustInputWainingTips .el-dialog__footer{
-   text-align:center;
-}
+
 .divider-line {
   width: 100%;
   height: 1px;
@@ -480,5 +494,11 @@ export default {
 .order-status {
   margin-right: 20px;
   color: #606266;
+}
+.pre-formatted {
+  white-space: pre;
+}
+.mustInputWainingTips .el-dialog__footer{
+  text-align:center;
 }
 </style>

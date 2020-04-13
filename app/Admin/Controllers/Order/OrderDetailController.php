@@ -5,24 +5,22 @@ namespace App\Admin\Controllers\Order;
 
 
 use App\Admin\Controllers\Controller;
-use App\Admin\Models\Order;
 use App\Admin\Models\OrderCompensate;
 use App\Admin\Models\RefundReason;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Admin\Modules\OrderDetail as Order;
 class OrderDetailController extends Controller
 {
-    const compensateObject = [1=>'商家',2=>'平台'];
-    public function show($id){
-
-        return $this->ok(array($id));
-        return $this->ok(['aa' => 'bb']);
+    public function show(Order $order){
+        $orderDetail = $order->fetchOrderDetailByOrderId(2);
+        return $this->ok($orderDetail);
     }
     public function getOrderSupplier(Request $request)
     {
         $order_id = $request->input('order_id');
-        $supplierInfo = DB::table('cbd_order_detail as od')
-                ->join('cbd_supplier as supplier', 'od.supplier_id', '=', 'supplier.supplier_id')
+        $supplierInfo = DB::table('order_detail as od')
+                ->join('supplier as supplier', 'od.supplier_id', '=', 'supplier.supplier_id')
                 ->where(['od.order_id' => $order_id,])
                 ->select('supplier.supplier_id', 'supplier.supplier_name')
                 ->distinct('supplier.supplier_id')

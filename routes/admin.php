@@ -37,6 +37,8 @@ Route::prefix('admin-api')
 
             Route::resource('config-categories', 'ConfigCategoryController')->except(['show', 'create']);
 
+//            Route::get('config-categories', 'ConfigCategoryController@index')->name('c.i');
+
             Route::get('configs/vue-routers', 'ConfigController@vueRouters')->name('configs.vue-routers');
             Route::put('configs/values', 'ConfigController@updateValues')->name('configs.update-values');
             Route::resource('configs', 'ConfigController')->except(['show']);
@@ -81,7 +83,7 @@ Route::prefix('admin-api')
             Route::post('order-detail/getOrderSupplierShops', 'Order\OrderDetailController@getOrderSupplierShops')->name('order-detail.getOrderSupplierShops');
             Route::post('order-detail/getCompensateReason', 'Order\OrderDetailController@getCompensateReason')->name('order-detail.getCompensateReason');
             Route::post('order-detail/doOrderCompensate', 'Order\OrderDetailController@doOrderCompensate')->name('order-detail.doOrderCompensate');
-
+            Route::get('order/detail/{order_id}', 'Order\OrderDetailController@show')->name('order.detail.show');
         });
     });
 

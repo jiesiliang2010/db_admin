@@ -11,10 +11,12 @@ class Authenticate extends Middleware
     use UrlWhitelist;
     protected $urlWhitelist = [
         '/configs/system_basic/values',
+        '/order/detail',
     ];
 
     public function handle($request, \Closure $next, ...$guards)
     {
+        //这里的验证只是登录态的看守
         if ($this->shouldPassThrough($request)) {
             return $next($request);
         } else {

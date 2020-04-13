@@ -25,6 +25,7 @@ abstract class PermissionMiddleware
     protected $urlWhitelist = [];
 
     /**
+     * 这里是权限分配的看守
      * Handle an incoming request.
      *
      * @param \Illuminate\Http\Request $request
@@ -39,6 +40,7 @@ abstract class PermissionMiddleware
             return $next($request);
         }
 
+        //却在这里冗余了登录态的验证
         if (!Admin::user()) {
             PermissionChecker::error();
         }
