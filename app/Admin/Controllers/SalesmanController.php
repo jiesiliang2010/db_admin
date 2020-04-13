@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 //导购审核模块功能
 //author:陈国宾
 //2020.4.9
-class SalemanController extends Controller
+class SalesmanController extends Controller
 {
     //搜索过滤
     private function filter($query,$where){
@@ -97,7 +97,7 @@ class SalemanController extends Controller
         DB::beginTransaction();
         $save_res = DB::table("salesman")
             ->where("id",$insert['salesman_id'])
-            ->save($save);
+            ->update($save);
 
         $log_res = DB::table("salesman_log")
             ->insert($insert);

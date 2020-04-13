@@ -106,7 +106,7 @@ class GoodsAuditController extends Controller
 
         $res = DB::table("goods")
             ->whereIn("goods_no",$where['goods_no'])
-            ->save($save);
+            ->update($save);
 
         return $this->ok($res);
     }

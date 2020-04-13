@@ -10,16 +10,37 @@ if (config('app.env') == 'local') {
 Route::get('/admin/{path?}', 'RedirectController@index')->where('path', '.*')->name('redirect.index');
 Route::get('/admin-dev/{path?}', 'RedirectController@indexDev')->where('path', '.*')->name('redirect.index-dev');
 
-Route::prefix('admin-api')
-    ->middleware('admin')
-    ->as('admin.')
+
+
+Route::prefix('admin-api')->middleware('admin')->as('admin.')
     ->group(function () {
+        //举报模块
+        Route::any('userReport/list', 'UserReportController@list')->name('userReport.list');
+        Route::any('userReport/detail', 'UserReportController@detail')->name('userReport.detail');
+        Route::any('userReport/update', 'UserReportController@update')->name('userReport.update');
+
+        //申诉模块
+        Route::any('userComplaint/list', 'UserComplaintController@list')->name('userComplaint.list');
+        Route::any('userComplaint/detail', 'UserComplaintController@detail')->name('userComplaint.detail');
+        Route::any('userComplaint/update', 'UserComplaintController@update')->name('userComplaint.update');
+
+        //导购模块
+        Route::any('salesman/list', 'SalesmanController@list')->name('salesman.list');
+        Route::any('salesman/detail', 'SalesmanController@detail')->name('salesman.detail');
+        Route::any('salesman/update', 'SalesmanController@update')->name('salesman.update');
+
+        //商品审核模块
+        Route::any('goodsAudit/list', 'GoodsAuditController@list')->name('goodsAudit.list');
+        Route::any('goodsAudit/detail', 'GoodsAuditController@detail')->name('goodsAudit.detail');
+        Route::any('goodsAudit/update', 'GoodsAuditController@update')->name('goodsAudit.update');
+
         Route::post('auth/login', 'Auth\LoginController@login')->name('login');
 
         Route::middleware([
             'admin.auth',
             'admin.permission',
         ])->group(function () {
+
             Route::post('auth/logout', 'Auth\LoginController@logout')->name('logout');
 
             Route::get('user', 'AdminUserController@user')->name('user');
@@ -63,5 +84,7 @@ Route::prefix('admin-api')
                 ->except(['store', 'show', 'create']);
             Route::put('system-media', 'SystemMediaController@batchUpdate')->name('system-media.batch.update');
             Route::delete('system-media', 'SystemMediaController@batchDestroy')->name('system-media.batch.destroy');
+
+
         });
     });

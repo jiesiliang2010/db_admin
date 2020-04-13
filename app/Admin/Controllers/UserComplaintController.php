@@ -26,11 +26,11 @@ class UserComplaintController extends Controller
         }
 
         if($where['report_date_s']){
-            $query->where("a.report_process_date",">=",strtotime($where['report_date_s']));
+            $query->where("a.report_date",">=",strtotime($where['report_date_s']));
         }
 
         if($where['report_date_e']){
-            $query->where("a.report_process_date","<=",strtotime($where['report_date_e']));
+            $query->where("a.report_date","<=",strtotime($where['report_date_e']));
         }
 
         if($where['complaint_date_s']){
@@ -82,7 +82,14 @@ class UserComplaintController extends Controller
             ->leftJoin("users as b","a.user_id","=","b.id")
             ->leftJoin("salesman as c","a.sale_id","=","c.id")
             ->select("e.*","a.*","b.nickname as user_name","c.nickname as sale_name")
-            ->paginate(15);
+            ->paginate(15)
+            ->toArray();
+
+        $res = $this->objToArr($res);
+
+        foreach ($res['data'] as &$v){
+            $v['report_img'] = array_values(json_decode($v['report_img'],true)[0]);
+        }
 
         return $this->ok($res);
     }
@@ -100,6 +107,10 @@ class UserComplaintController extends Controller
             ->leftJoin("salesman as c","a.sale_id","=","c.id")
             ->select("e.*","a.*","b.nickname as user_name","c.nickname as sale_name")
             ->first();
+
+        $res = get_object_vars($res);
+
+        $res['report_img'] = array_values(json_decode($res['report_img'],true)[0]);
 
         return $this->ok($res);
     }
@@ -122,7 +133,7 @@ class UserComplaintController extends Controller
 
         $res = DB::table("report_complaint")
             ->where($where)
-            ->save($save);
+            ->update($save);
 
         return $this->ok($res);
     }
