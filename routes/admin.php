@@ -77,6 +77,11 @@ Route::prefix('admin-api')
                 'as' => 'order.list.detail',
                 'uses' => 'Order\OrderDetailController@show'
             ));*/
+            Route::post('order-detail/getOrderSupplier', 'Order\OrderDetailController@getOrderSupplier')->name('order-detail.getOrderSupplier');
+            Route::post('order-detail/getOrderSupplierShops', 'Order\OrderDetailController@getOrderSupplierShops')->name('order-detail.getOrderSupplierShops');
+            Route::post('order-detail/getCompensateReason', 'Order\OrderDetailController@getCompensateReason')->name('order-detail.getCompensateReason');
+            Route::post('order-detail/doOrderCompensate', 'Order\OrderDetailController@doOrderCompensate')->name('order-detail.doOrderCompensate');
+
         });
     });
 

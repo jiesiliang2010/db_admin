@@ -168,7 +168,7 @@ export default {
     },
     openDetails(row) {
       const order_id = row.id;
-      this.$router.push({ path: `order/detail/${order_id}`});
+      this.$router.push({ path: `order-detail/${order_id}`});
       //this.$router.push({ path: `order-detail/${order_id}`});
       //this.$router.push({path: 'order-detail', query: {id: order_id}});
       //window.location.href = `order-detail/order_id/${order_id}`;
@@ -194,5 +194,4 @@ export default {
   },
 
 }
-
 </script>
