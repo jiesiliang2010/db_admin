@@ -6,7 +6,7 @@ namespace App\Admin\Models;
 
 class Salesman extends BaseModel
 {
-    protected $table = 'cbd_salesman';
+    protected $table = 'salesman';
 
 
     public function fetchListByGuideIds($guideIds)

@@ -9,7 +9,7 @@ use Illuminate\Support\Collection;
 
 class OrderDetail extends BaseModel
 {
-    protected $table = 'cbd_order_detail';
+    protected $table = 'order_detail';
 
     public $cacheVersion = 'v11';
 

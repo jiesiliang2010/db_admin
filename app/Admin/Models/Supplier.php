@@ -6,7 +6,7 @@ namespace App\Admin\Models;
 
 class Supplier extends BaseModel
 {
-    protected $table = 'cbd_supplier';
+    protected $table = 'supplier';
 
     protected $primaryKey = 'supplier_id';
 

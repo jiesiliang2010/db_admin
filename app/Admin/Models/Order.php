@@ -11,7 +11,7 @@ class Order extends BaseModel
 
     public $cacheVersion = 'v6';
 
-    protected $table = 'cbd_order';
+    protected $table = 'order';
 
     /**
      * 根据订单id获取主订单信息

@@ -67,7 +67,11 @@ Route::prefix('admin-api')
             Route::delete('system-media', 'SystemMediaController@batchDestroy')->name('system-media.batch.destroy');
 
 
-            //订单
+            //订单详情
             Route::get('order/detail/{order_id}', 'Order\OrderDetailController@show')->name('order.detail.show');
+            //订单日志
+            Route::get('order/log-list/{order_id}', 'Order\OrderLogController@showList')->name('order.log.list');
+            //物流日志
+            Route::get('order/trans-list/{order_id}', 'Order\TransLogController@showList')->name('order.trans.log.list');
         });
     });

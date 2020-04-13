@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Builder;
 class Config extends Model
 {
 
-    protected $table = 'cbd_configs';
+//    protected $table = 'cbd_configs';
 
     const TYPE_INPUT = 'input';
     const TYPE_TEXTAREA = 'textarea';

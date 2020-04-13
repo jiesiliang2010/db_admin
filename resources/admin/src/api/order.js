@@ -5,5 +5,9 @@ export function getOrderDetail(id) {
 }
 
 export function getOrderLog(id) {
-  return Request.get(`/order-log/${id}`)
+  return Request.get(`/order/log-list/${id}`)
+}
+
+export function getOrderTransLog(id) {
+    return Request.get(`/order/trans-list/${id}`)
 }
