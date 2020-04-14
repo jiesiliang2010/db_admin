@@ -6,7 +6,8 @@
         <div>
           <span class="order-status">订单最新状态</span>
           <el-button type="primary" @click="showLog()" :loading="isLoadingLog">查看日志</el-button>
-          <el-button type="warning" plain @click="returnFormVisible = true">退货</el-button>
+          <el-button type="warning" plain @click="returnMoneyFormVisible = true">退货</el-button>
+          <el-button type="primary" @click="showCompensateLog()" :loading="isLoadingLog">查看赔款单</el-button>
           <!--<el-button type="danger" plain @click="returnFormVisible = true;getCompensateReason();">直接退款</el-button>-->
         </div>
       </div>
@@ -47,17 +48,29 @@
         <!-- 订单商品信息 -->
         <div class="supplier-box" v-for="(item, index) in orderGoods" :key="'goods-' + index">
           <div class="supplier-title">
-            <span>供应商名称：{{ item.supplierName }}</span>
+            <span >子订单号：{{ item.orderNo }}</span>
+            <span>商家名称：{{ item.supplierName }}</span>
             <span>店铺名称：{{ item.shopName }}</span>
+            <span>店铺负责人：{{ item.shopChargePerson }}</span>
+            <span>店铺联系方式：{{ item.shopChargePersonPhone }}</span>
+              <span><el-button type="danger" plain @click="returnFormVisible = true;getCompensateReason(item);">直接退款</el-button> </span>
           </div>
           <el-table :data="item.goods" resource="admin-users">
             <el-table-column prop="id" label="商品编号"/>
+            <el-table-column prop="goodName" label="商品名称"/>
+              <el-table-column prop="guideNickName" label="导购昵称"/>
             <el-table-column prop="spec" label="规格"/>
             <el-table-column prop="num" label="数量"/>
-            <el-table-column prop="money" label="金额"/>
-            <el-table-column prop="lowMoney" label="底价"/>
-            <el-table-column prop="saleMoney" label="优惠金额"/>
-            <el-table-column prop="guideMan" label="导购员"/>
+            <el-table-column prop="money" label="销售金额"/>
+            <el-table-column prop="payMoney" label="实付金额"/>
+              <el-table-column prop="payMoney" label="店铺优惠"/>
+              <el-table-column prop="payMoney" label="平台优惠"/>
+              <el-table-column prop="payMoney" label="平台佣金"/>
+            <el-table-column prop="lowMoney" label="店铺底价"/>
+              <el-table-column prop="lowMoney" label="导购佣金"/>
+            <el-table-column prop="saleMoney" label="子订单状态"/>
+            <el-table-column prop="guideMan" label="物流公司"/>
+              <el-table-column prop="guideMan" label="物流单号"/>
             <el-table-column label="操作" width="150">
               <template #default="{ row }">
                 <el-button-group>
@@ -113,27 +126,34 @@
     </el-dialog>
 
     <!-- 退货弹窗 -->
-    <el-dialog title="用户赔款单" width="43%"  center :visible.sync="returnFormVisible">
+    <el-dialog title="用户赔款单" width="38%"  center :visible.sync="returnFormVisible">
       <el-form :model="returnForm" @submit.navite="newsubmit" label-width="83px">
         <el-form-item>
-             子订单号:{{currentPageOrderNo}}     9393993    199398
+             <strong>子订单号:</strong>&nbsp;&nbsp;{{currentPageOrderNo}}&nbsp;&nbsp;<br />
+             <strong>商家名称:</strong>&nbsp;&nbsp;{{currentPageSupplierName}}&nbsp;&nbsp;<br />
+             <strong>店铺名称:</strong>&nbsp;&nbsp;{{currentPageShopName}}
         </el-form-item>
-        <el-form-item label="商家">
+        <!--<el-form-item label="商家">
           <el-select v-model="returnForm.supplier_id" placeholder="请选择商家" @change="selectChange" >
             <el-option v-for="item in supplierInfo" :label="item.supplier_name" :value="item.supplier_id"/>
-            <!--- <el-option label="商家二" value="beijing"/>-->
+             <el-option label="商家二" value="beijing"/>
           </el-select>
         </el-form-item>
         <el-form-item label="店铺">
           <el-select :key="selectedSupplierId" v-model="returnForm.shop_id" placeholder="请选择店铺">
-            <!--<el-option label="店铺二" value="beijing"/>-->
+            <el-option label="店铺二" value="beijing"/>
             <el-option v-for="item in currentOrderShopInfo" :label="item.shop_name" :value="item.shop_id"/>
           </el-select>
-        </el-form-item>
-        <el-form-item label="赔款原因">
+        </el-form-item>-->
+        <!--<el-form-item label="赔款原因">
           <el-radio-group v-model="returnForm.compensate_reason" @change="compensateChooseReason(this)">
             <el-radio :value="item.reason_id" v-for="item in compensationReason" :label="item.reason_id">{{item.reason}}</el-radio>
           </el-radio-group>
+        </el-form-item> -->
+        <el-form-item label="赔款原因">
+          <el-select :key="selectedSupplierId" @change="compensateChooseReason(this)" v-model="returnForm.compensate_reason" placeholder="赔款原因">
+            <el-option v-for="item in compensationReason" :label="item.reason" :value="item.reason_id"/>
+          </el-select>
         </el-form-item>
         <el-form-item label="赔款描述">
           <el-input type="textarea" v-model="returnForm.compensate_describe"/>
@@ -174,7 +194,9 @@ import {
   getOrderSupplier,
   getOrderSupplierShops,
   getCompensateReasonPost,
-  doOrderCompensate
+  doOrderCompensate,
+  getOrderTransLog,
+  showCompensateLog,
 } from '@/api/order'
 
 export default {
@@ -184,72 +206,9 @@ export default {
   },
   data() {
     return {
-      orderDetail: {
-        orderNo: '',
-        orderDate: '',
-        orderMoney: '',
-        contact: '',
-        tel: '',
-        orderBaseMoney: '',
-        address: '',
-        recipient: '',
-        salesman: '',
-        distribution: '',
-      },
-      orderGoods: [{
-        id: 1,
-        supplierName: '苹果',
-        shopName: '葡萄',
-        goods: [{
-          id: 1,
-          spec: '黄色',
-          num: 2,
-          money: '20',
-          lowMoney: '10',
-          saleMoney: '15',
-        }],
-      }, {
-        id: 2,
-        supplierName: '香蕉',
-        shopName: '西瓜',
-        goods: [{
-          id: 1,
-          spec: '黄色',
-          num: 2,
-          money: '20',
-          lowMoney: '10',
-          saleMoney: '15',
-        }],
-      }],
-      logistics: [{
-        id: '2',
-        company: '圆通',
-        no: 'u987f9a79',
-        info: [{
-          content: '快递公司开始揽收',
-          timestamp: '2018-04-11',
-        }, {
-          content: '快递到达【上海市】虹口区',
-          timestamp: '2018-04-13',
-        }, {
-          content: '正在派件',
-          timestamp: '2018-04-15',
-        }],
-      }, {
-        id: '1',
-        company: '顺丰',
-        no: 'u987f9a79',
-        info: [{
-          content: '快递公司开始揽收',
-          timestamp: '2018-04-11',
-        }, {
-          content: '快递到达【上海市】虹口区',
-          timestamp: '2018-04-13',
-        }, {
-          content: '正在派件',
-          timestamp: '2018-04-15',
-        }],
-      }],
+      orderDetail: {},
+      orderGoods: [],
+      logistics: [],
       showLogDialog: false,
       logData: [],
       isLoadingLog: false,
@@ -284,6 +243,8 @@ export default {
       isHiddenCancel:true,
       dataOrderSupplier:[],
       currentPageOrderNo:'',
+      currentPageSupplierName:'',
+      currentPageShopName:'',
     }
   },
   computed: {
@@ -296,26 +257,17 @@ export default {
     async showLog() {
       // this.isLoadingLog = true
       // console.log(this.$route.params.id)
-      // const { data } = await getOrderLog(this.$route.params.id)
-
-      this.logData = [{
-        date: '2016-05-02',
-        content: '用户来电号码为xxx',
-        remark: '上海市普陀区金沙江路 1518 弄',
-        people: '王小虎',
-      }, {
-        date: '2016-05-02',
-        content: '用户来电号码为xxx',
-        remark: '上海市普陀区金沙江路 1518 弄',
-        people: '王小虎',
-      }, {
-        date: '2016-05-02',
-        content: '用户来电号码为xxx',
-        remark: '上海市普陀区金沙江路 1518 弄',
-        people: '王小虎',
-      }]
+      const { data } = await getOrderLog(this.$route.params.id)
+      this.logData = data;
       this.showLogDialog = true
       this.isLoadingLog = false
+    },
+    async showCompensateLog() {
+       const { data } = await showCompensateLog({'order_id':this.$route.params.id});
+       console.log(data);
+      // this.logData = data;
+      // this.showLogDialog = true
+      // this.isLoadingLog = false
     },
     async selectChange(supplier_id) {
       this.returnForm.shop_id = '';
@@ -324,9 +276,13 @@ export default {
         order_id: this.currentPageOrderId
       })
       this.currentOrderShopInfo = data;
-      console.log(this.currentOrderShopInfo);
     },
-    async getCompensateReason() {
+    async getCompensateReason(item) {
+      this.returnForm.supplier_id = item.supplier_id;
+      this.returnForm.shop_id = item.shop_id;
+      this.currentPageOrderNo = item.orderNo;
+      this.currentPageSupplierName = item.supplierName;
+      this.currentPageShopName = item.shopName;
       const { data } = await getCompensateReasonPost({})
       this.compensationReason = data;
     },
@@ -356,6 +312,7 @@ export default {
       var compenate_object = this.returnForm.compensate_object ;
       var order_id = this.currentPageOrderId;
       var audit_state = 0;
+      var sub_order_no = this.currentPageOrderNo;
       this.compensateFormData = {
         'supplier_id':supplier_id,
         'shop_id':shop_id,
@@ -365,6 +322,7 @@ export default {
         'compenate_object':compenate_object,
         'order_id':order_id,
         'audit_state':audit_state,
+        'sub_order_no':sub_order_no,
       };
       if(!supplier_id) {this.compensateDescTips = '请选择商家';this.centerDialogVisible = true;return false;};
       if(!shop_id) {this.compensateDescTips = '请选择店铺';this.centerDialogVisible = true;return false;};
@@ -421,8 +379,15 @@ export default {
         detailList.forEach((i) => {
             let shop = {
                 id: i.supplier_name,
+                goodName: i.goods_name,
+                supplier_id: i.supplier_id,
+                shop_id    : i.shop_id,
+                guideNickName:i.guide_nick_name,
+                orderNo: i.sub_order_no,
                 supplierName: i.supplier_name,
                 shopName: i.shop_name,
+                shopChargePerson: i.charge_person,
+                shopChargePersonPhone: i.charge_person_phone,
                 goods:[],
             };
             i.goodList.forEach((v) => {
@@ -445,11 +410,12 @@ export default {
     $route: {
       async handler(newVal) {
         // console.log(newVal.params.id)
+        const [{ data: { order, detailList }}, { data: transLog  }] = [await getOrderDetail(newVal.params.id), await getOrderTransLog(newVal.params.id)]
+          // console.log('**',transLog)
+          this.orderDetail = this.paseOrderInfo(order);
+          this.orderGoods = this.paseGoodsDetail(detailList);
+          this.logistics = transLog;
         this.currentPageOrderId = newVal.params.id;
-        const { data } = await getOrderDetail(newVal.params.id)
-          // console.log(data.detailList);
-          this.orderDetail = this.paseOrderInfo(data.order);
-          this.orderGoods = this.paseGoodsDetail(data.detailList);
         let param = {
           order_id: newVal.params.id
         };

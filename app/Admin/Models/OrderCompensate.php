@@ -4,7 +4,7 @@ namespace App\Admin\Models;
 
 class OrderCompensate extends Model
 {
-    protected $table = 'cbd_order_compensate';
+    protected $table = 'order_compensate';
 
     public function configs()
     {

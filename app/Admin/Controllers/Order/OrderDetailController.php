@@ -12,8 +12,11 @@ use Illuminate\Support\Facades\DB;
 use App\Admin\Modules\OrderDetail as Order;
 class OrderDetailController extends Controller
 {
-    public function show(Order $order){
-        $orderDetail = $order->fetchOrderDetailByOrderId(2);
+    const compensateObject = [
+         1 => '商家', 2 =>'平台'
+    ];
+    public function show(Request $request, Order $order){
+        $orderDetail = $order->fetchOrderDetailByOrderId(request('order_id'));
         return $this->ok($orderDetail);
     }
     public function getOrderSupplier(Request $request)
@@ -31,8 +34,8 @@ class OrderDetailController extends Controller
     {
         $order_id = $request->input('order_id');
         $supplier_id = $request->input('supplier_id');
-        $supplierInfo = DB::table('cbd_order_detail as od')
-            ->join('cbd_shop as shop', 'shop.shop_id', '=', 'od.shop_id')
+        $supplierInfo = DB::table('order_detail as od')
+            ->join('shop as shop', 'shop.shop_id', '=', 'od.shop_id')
             ->where(['od.order_id' => $order_id,'od.supplier_id' => $supplier_id])
             ->select('shop.shop_id', 'shop.shop_name')
             ->distinct('od.shop_id')
@@ -66,8 +69,17 @@ class OrderDetailController extends Controller
         $compensateModel->compensate_describe = $compensateData['compensate_describe'];
         $compensateModel->order_id = $compensateData['order_id'];
         $compensateModel->audit_state = $compensateData['audit_state'];
+        $compensateModel->sub_order_no =$compensateData['sub_order_no'];
         $compensateModel->create_time = time();
         $compensateModel->save();
         return $this->ok([]);
+    }
+    /**
+     * @desc 获取赔款单详情
+     */
+    public function showCompensateLog(Request $request)
+    {
+        $order_id = $request->order_id;
+        return $this->ok();
     }
 }

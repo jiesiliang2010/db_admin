@@ -5,7 +5,11 @@ export function getOrderDetail(id) {
 }
 
 export function getOrderLog(id) {
-  return Request.get(`/order-log/${id}`)
+  return Request.get(`/order/log-list/${id}`)
+}
+
+export function getOrderTransLog(id) {
+    return Request.get(`/order/trans-list/${id}`)
 }
 
 export function getOrderSupplier(data) {
@@ -21,4 +25,7 @@ export function getCompensateReasonPost(data) {
 
 export function doOrderCompensate(data) {
   return Request.post(`order-detail/doOrderCompensate`,data)
+}
+export function showCompensateLog(data) {
+  return Request.post(`order-detail/showCompensateLog`,data)
 }

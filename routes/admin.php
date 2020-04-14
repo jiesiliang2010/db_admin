@@ -66,8 +66,6 @@ Route::prefix('admin-api')
             Route::put('system-media', 'SystemMediaController@batchUpdate')->name('system-media.batch.update');
             Route::delete('system-media', 'SystemMediaController@batchDestroy')->name('system-media.batch.destroy');
 
-            //订单
-            Route::get('order/detail/{id?}', 'Order\OrderDetailController@show')->name('order.detail.show');
             //Route::get('order-list', 'Order\OrderListController@list')->name('order.list.list');
             Route::any('order-list/{order_info?}',array(
                 'as' => 'order.list.search',
@@ -83,7 +81,13 @@ Route::prefix('admin-api')
             Route::post('order-detail/getOrderSupplierShops', 'Order\OrderDetailController@getOrderSupplierShops')->name('order-detail.getOrderSupplierShops');
             Route::post('order-detail/getCompensateReason', 'Order\OrderDetailController@getCompensateReason')->name('order-detail.getCompensateReason');
             Route::post('order-detail/doOrderCompensate', 'Order\OrderDetailController@doOrderCompensate')->name('order-detail.doOrderCompensate');
+            Route::post('order-detail/showCompensateLog', 'Order\OrderDetailController@showCompensateLog')->name('order-detail.showCompensateLog');
+
             Route::get('order/detail/{order_id}', 'Order\OrderDetailController@show')->name('order.detail.show');
+            //订单日志
+            Route::get('order/log-list/{order_id}', 'Order\OrderLogController@showList')->name('order.log.list');
+            //物流日志
+            Route::get('order/trans-list/{order_id}', 'Order\TransLogController@showList')->name('order.trans.log.list');
         });
     });
 

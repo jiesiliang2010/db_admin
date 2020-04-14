@@ -38,7 +38,8 @@ class OrderDetail
 
             $orderDtailList = $orderDtailList->map(function ($detail, $k) use ($guideList) {
                 $detail['create_date'] = $detail['create_at'] ? Carbon::createFromTimestamp($detail['create_at'])->toDateTimeString() : '';
-                $detail['guide_name'] = $guideList->offsetExists($detail['guide_id']) ? $guideList[$detail['guide_id']]['nickname'] : '';
+                $detail['guide_name'] = $guideList->offsetExists($detail['guide_id']) ? $guideList[$detail['guide_id']]['realname'] : '';
+                $detail['guid_nick_name'] = $guideList->offsetExists($detail['guide_id']) ? $guideList[$detail['guide_id']]['nickname'] : '';
                 return collect($detail)->map(function ($v, $k) {
                     return strval($v);
                 });
@@ -47,7 +48,14 @@ class OrderDetail
                 return [
                     'shop_name' => $isExistShop ? $shopList[$shopId]['shop_name'] : '',
                     'supplier_name' => $isExistShop ? $shopList[$shopId]['supplier']['supplier_name'] : '',
+                    'sub_order_no' =>  $shopGoods[0]['sub_order_no'] ,
+                    'charge_person' => $isExistShop ? $shopList[$shopId]['charge_person'] : '',
+                    'charge_person_phone' => $isExistShop ? $shopList[$shopId]['charge_person_phone'] : '',
+                    'guide_nick_name' => $isExistShop ? $shopList[$shopId]['charge_person_phone'] : '',
+                    'shop_id'  => $shopId,
+                    'supplier_id' => $shopList[$shopId]['supplier_id'],
                     'goodList' => $shopGoods,
+
                 ];
             })->values();
         }

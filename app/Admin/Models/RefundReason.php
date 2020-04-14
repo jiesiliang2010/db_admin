@@ -4,7 +4,7 @@ namespace App\Admin\Models;
 
 class RefundReason extends Model
 {
-    protected $table = 'cbd_refund_reason';
+    protected $table = 'refund_reason';
     protected $fillable = ['reason_id', 'reason'];
 
     public function configs()
