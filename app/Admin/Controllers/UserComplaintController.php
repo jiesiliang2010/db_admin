@@ -88,7 +88,7 @@ class UserComplaintController extends Controller
         $res = $this->objToArr($res);
 
         foreach ($res['data'] as &$v){
-            $v['report_img'] = array_values(json_decode($v['report_img'],true)[0]);
+            $v['report_img'] = explode(",",$v['report_img']);
         }
 
         return $this->ok($res);
@@ -110,7 +110,7 @@ class UserComplaintController extends Controller
 
         $res = get_object_vars($res);
 
-        $res['report_img'] = array_values(json_decode($res['report_img'],true)[0]);
+        $res['report_img'] = explode(",",$res['report_img']);
 
         return $this->ok($res);
     }
