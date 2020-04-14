@@ -11,7 +11,7 @@ class Authenticate extends Middleware
     use UrlWhitelist;
     protected $urlWhitelist = [
         '/configs/system_basic/values',
-        '/order/detail',
+        '/order/detail/*',
     ];
 
     public function handle($request, \Closure $next, ...$guards)
