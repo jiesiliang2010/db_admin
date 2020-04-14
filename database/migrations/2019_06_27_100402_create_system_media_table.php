@@ -14,8 +14,8 @@ class CreateSystemMediaTable extends Migration
     public function up()
     {
         Schema::create('system_media', function (Blueprint $table) {
-            $table->charset = 'utf8';
-            $table->collation = 'utf8_general_ci';
+            $table->charset = 'utf8mb4';
+            $table->collation = 'utf8mb4_general_ci';
             $table->bigIncrements('id');
             $table->string('filename', 100)->index();
             $table->string('ext', 20)->default('')->index();

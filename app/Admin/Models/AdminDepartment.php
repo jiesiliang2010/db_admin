@@ -2,16 +2,19 @@
 
 namespace App\Admin\Models;
 
+use Illuminate\Support\Facades\DB;
+
 class AdminDepartment extends Model
 {
     protected $fillable = ['name'];
 
     public static function departmentByUserId($userId)
     {
-        return self::table('admin_role_department as ard')
+        return DB::table('admin_role_department as ard')
             ->join('admin_user_role as user_role', 'user_role.role_id', '=', 'ard.role_id')
+            ->join('admin_departments as department', 'ard.department_id', '=', 'department.id')
             ->where('user_role.user_id', '=', $userId)
-            ->first('ard.department_id')
+            ->first(['department.id as department_id', 'department.name as department_name'])
             ;
     }
 

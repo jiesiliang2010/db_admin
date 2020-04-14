@@ -14,14 +14,14 @@ class CreateAdminUserRoleAndPermissionTable extends Migration
     public function up()
     {
         Schema::create('admin_user_role', function (Blueprint $table) {
-            $table->charset = 'utf8';
-            $table->collation = 'utf8_general_ci';
+            $table->charset = 'utf8mb4';
+            $table->collation = 'utf8mb4_general_ci';
             $table->integer('user_id')->index();
             $table->integer('role_id')->index();
         });
         Schema::create('admin_user_permission', function (Blueprint $table) {
-            $table->charset = 'utf8';
-            $table->collation = 'utf8_general_ci';
+            $table->charset = 'utf8mb4';
+            $table->collation = 'utf8mb4_general_ci';
             $table->integer('user_id')->index();
             $table->integer('permission_id')->index();
         });

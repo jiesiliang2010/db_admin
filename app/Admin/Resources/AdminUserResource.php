@@ -27,6 +27,7 @@ class AdminUserResource extends JsonResource
             'avatar' => $model->avatar,
             'roles' => $this->getRoles(),
             'permissions' => $this->getPermissions(),
+            'departmentName' => $model->department_name,
             'created_at' => (string) $model->created_at,
             'updated_at' => (string) $model->updated_at,
         ];

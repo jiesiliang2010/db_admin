@@ -7,7 +7,6 @@ use App\Admin\Models\AdminDepartment;
 use App\Admin\Requests\AdminUserProfileRequest;
 use App\Admin\Requests\AdminUserRequest;
 use App\Admin\Resources\AdminUserResource;
-use App\Admin\Models\AdminPermission;
 use App\Admin\Models\AdminRole;
 use App\Admin\Models\AdminUser;
 use App\Admin\Utils\Admin;
@@ -25,9 +24,14 @@ class AdminUserController extends Controller
         );
     }
 
+    /**
+     * 个人资料入口
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function editUser()
     {
         $user = Admin::user();
+        $user = $user->setAttribute('department_name', AdminDepartment::departmentByUserId($user->id)->department_name);
         $user->load(['roles', 'permissions']);
         return $this->ok(AdminUserResource::make($user));
     }
@@ -41,20 +45,24 @@ class AdminUserController extends Controller
 
     public function index(AdminUserFilter $filter)
     {
+        $fields = ['admin_users.id', 'admin_users.name', 'admin_users.username', 'admin_users.created_at', 'admin_users.updated_at'];
         if (!Admin::isAdministrator()) {
+            $currentDepartmentId = AdminDepartment::departmentByUserId($this->getCurrentUserId())->department_id;
             $users = AdminUser::query()
                 ->filter($filter)
                 ->with(['roles'])
                 ->join('admin_user_role as aur', 'admin_users.id', '=', 'aur.user_id')
                 ->join('admin_role_department as ard', 'aur.role_id', '=', 'ard.role_id')
-                ->orderByDesc('id')
-                ->paginate();
+                ->where('ard.department_id', $currentDepartmentId)
+                ->groupBy('admin_users.id')
+                ->orderByDesc('admin_users.id')
+                ->paginate(null, $fields);
         } else {
             $users = AdminUser::query()
                 ->filter($filter)
                 ->with(['roles'])
                 ->orderByDesc('id')
-                ->paginate();
+                ->paginate(null, $fields);
         }
         return $this->ok(AdminUserResource::collection($users));
     }
@@ -145,11 +153,10 @@ class AdminUserController extends Controller
         return compact('roles', 'departments');
     }
 
-    public function create(Request $request)
+    public function create()
     {
         $isAdmin = Admin::isAdministrator();
-        $user = Admin::user();
-        $currentLoginUserId = AdminUserResource::make($user)->toArray($request)['id'];
+        $currentLoginUserId = $this->getCurrentUserId();
         $formData = $this->formData($currentLoginUserId);
         if (!$isAdmin) {
             $currentLoginDepartmentId = AdminDepartment::departmentByUserId($currentLoginUserId)->department_id;
@@ -159,5 +166,11 @@ class AdminUserController extends Controller
         }
         $formData['isAdmin'] = $isAdmin;
         return $this->ok($formData);
+    }
+
+    public function getCurrentUserId()
+    {
+        $user = Admin::user();
+        return $user->id;
     }
 }

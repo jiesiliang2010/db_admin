@@ -55,15 +55,15 @@ class AdminInitCommand extends Command
             [4, 2, '添加路由', 'vue-routers/create', 3, null, 1],
             [5, 2, '编辑路由', 'vue-routers/:id(\\d+)/edit', 4, null, 0],
 
-            [6, 0, '管理员管理', null, 5, null, 1],
-            [7, 6, '管理员列表', 'admin-users', 6, null, 1],
-            [8, 6, '添加管理员', 'admin-users/create', 7, null, 1],
-            [9, 6, '编辑管理员', 'admin-users/:id(\\d+)/edit', 8, null, 0],
+            [6, 0, '用户管理', null, 5, null, 1],
+            [7, 6, '用户列表', 'admin-users', 6, null, 1],
+            [8, 6, '添加用户', 'admin-users/create', 7, null, 1],
+            [9, 6, '编辑用户', 'admin-users/:id(\\d+)/edit', 8, null, 0],
 
-            [10, 0, '角色管理', null, 9, null, 1],
-            [11, 10, '角色列表', 'admin-roles', 10, null, 1],
-            [12, 10, '添加角色', 'admin-roles/create', 11, null, 1],
-            [13, 10, '编辑角色', 'admin-roles/:id(\\d+)/edit', 12, null, 0],
+            [10, 0, '岗位管理', null, 9, null, 1],
+            [11, 10, '岗位列表', 'admin-roles', 10, null, 1],
+            [12, 10, '添加岗位', 'admin-roles/create', 11, null, 1],
+            [13, 10, '编辑岗位', 'admin-roles/:id(\\d+)/edit', 12, null, 0],
 
             [14, 0, '权限管理', null, 13, null, 1],
             [15, 14, '权限列表', 'admin-permissions', 14, null, 1],

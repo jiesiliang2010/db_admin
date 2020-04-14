@@ -12,7 +12,7 @@
       <el-table-column prop="id" label="ID" width="60"/>
       <el-table-column prop="name" label="姓名" width="150"/>
       <el-table-column prop="username" label="账号" width="200"/>
-      <el-table-column label="角色" min-width="150">
+      <el-table-column label="岗位" min-width="150">
         <template #default="{ row }">
           <el-tag
             v-for="i of row.roles"
