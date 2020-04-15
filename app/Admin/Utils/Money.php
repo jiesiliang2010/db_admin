@@ -33,6 +33,31 @@ class Money
     }
 
     /**
+     * 相加
+     * @param mixed ...$args
+     * @return mixed
+     */
+    public static function add(...$args)
+    {
+        return array_reduce($args, function ($slack, $arg) {
+            return bcadd($slack, $arg, 2);
+        }, 0);
+    }
+
+    /**
+     * 相乘
+     * @param mixed ...$args
+     * @return mixed
+     */
+    public static function mul(...$args)
+    {
+        return array_reduce($args, function ($slack, $arg) {
+            return bcmul($slack, $arg, 2);
+        }, 1);
+    }
+
+
+    /**
      * 价格由元转分(用于微信支付单位转换)
      * @param $price 金额
      * @return int

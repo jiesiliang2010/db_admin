@@ -23,55 +23,61 @@
                         <el-input :value="orderDetail.orderDate" placeholder="预定日期"/>
                     </el-form-item>
                     <el-form-item label="订单金额">
-                        <el-input :value="orderDetail.orderMoney" placeholder="订单金额"/>
+                        <el-input :value="orderDetail.showTotalMoney" placeholder="订单金额"/>
                     </el-form-item>
-                    <el-form-item label="订单底价">
-                        <el-input :value="orderDetail.orderBaseMoney" placeholder="订单底价"/>
+                    <el-form-item label="店铺底价">
+                        <el-input :value="orderDetail.shopTotalMoney" placeholder="店铺底价"/>
+                    </el-form-item>
+                    <el-form-item label="导购底价">
+                        <el-input :value="orderDetail.guideTotalMoney" placeholder="导购底价"/>
                     </el-form-item>
                     <el-form-item label="联系人">
                         <el-input :value="orderDetail.contact" placeholder="联系人"/>
                     </el-form-item>
-                    <el-form-item label="联系手机">
-                        <el-input :value="orderDetail.tel" placeholder="联系手机"/>
+                    <el-form-item label="联系电话">
+                        <el-input :value="orderDetail.tel" placeholder="联系电话"/>
                     </el-form-item>
                     <el-form-item label="收货地址" size="medium">
                         <el-input :value="orderDetail.address" placeholder="收货地址" style="width: 340px;"/>
                     </el-form-item>
-                    <el-form-item label="收件人">
-                        <el-input :value="orderDetail.recipient" placeholder="收件人"/>
+                    <el-form-item label="用户ID">
+                        <el-input :value="orderDetail.userId" placeholder="用户ID"/>
+                    </el-form-item>
+                    <el-form-item label="订单类型">
+                        <el-input :value="orderDetail.orderType" placeholder="订单类型"/>
                     </el-form-item>
                     <el-form-item label="配送方式">
-                        <el-input :value="orderDetail.distribution" placeholder="配送方式"/>
+                        <el-input :value="orderDetail.transType" placeholder="配送方式"/>
                     </el-form-item>
                 </el-form>
                 <div class="divider-line"></div>
                 <!-- 订单商品信息 -->
                 <div class="supplier-box" v-for="(item, index) in orderGoods" :key="'goods-' + index">
                     <div class="supplier-title">
-                        <span>子订单号：{{ item.orderNo }}</span>
+                        <span>子订单号：{{ item.subOrderNo }}</span>
                         <span>商家名称：{{ item.supplierName }}</span>
                         <span>店铺名称：{{ item.shopName }}</span>
                         <span>店铺负责人：{{ item.shopChargePerson }}</span>
-                        <span>店铺联系方式：{{ item.shopChargePersonPhone }}</span>
+                        <span>店铺联系方式：{{ item.shopContract }}</span>
                         <span><el-button type="danger" plain
                                          @click="returnFormVisible = true;getCompensateReason(item);">直接退款</el-button> </span>
                     </div>
-                    <el-table :data="item.goods" resource="admin-users">
-                        <el-table-column prop="id" label="商品编号"/>
-                        <el-table-column prop="goodName" label="商品名称"/>
+                    <el-table :data="item.goods">
+                        <el-table-column prop="goodsId" label="商品编号"/>
+                        <el-table-column prop="goodsName" label="商品名称"/>
                         <el-table-column prop="guideNickName" label="导购昵称"/>
-                        <el-table-column prop="spec" label="规格"/>
+                        <el-table-column prop="specAttr" label="规格"/>
                         <el-table-column prop="num" label="数量"/>
-                        <el-table-column prop="money" label="销售金额"/>
+                        <el-table-column prop="saleMoney" label="销售金额"/>
                         <el-table-column prop="payMoney" label="实付金额"/>
-                        <el-table-column prop="payMoney" label="店铺优惠"/>
-                        <el-table-column prop="payMoney" label="平台优惠"/>
-                        <el-table-column prop="payMoney" label="平台佣金"/>
-                        <el-table-column prop="lowMoney" label="店铺底价"/>
-                        <el-table-column prop="lowMoney" label="导购佣金"/>
-                        <el-table-column prop="saleMoney" label="子订单状态"/>
-                        <el-table-column prop="guideMan" label="物流公司"/>
-                        <el-table-column prop="guideMan" label="物流单号"/>
+                        <el-table-column prop="shopDiscountMoney" label="店铺优惠"/>
+                        <el-table-column prop="platformDiscountMoney" label="平台优惠"/>
+                        <el-table-column prop="platformBrokerMoney" label="平台佣金"/>
+                        <el-table-column prop="shopClearMoney" label="店铺底价"/>
+                        <el-table-column prop="guideBrokerMoney" label="导购佣金"/>
+                        <el-table-column prop="orderStateAlias" label="子订单状态"/>
+                        <el-table-column prop="transCompany" label="物流公司"/>
+                        <el-table-column prop="transNo" label="物流单号"/>
                         <el-table-column label="操作" width="150">
                             <template #default="{ row }">
                                 <el-button-group>
@@ -395,44 +401,53 @@
                 }
             },
             paseOrderInfo(order) {
-                this.currentPageOrderNo = order.order_no;
                 return {
                     orderNo: order.order_no,
                     orderDate: order.create_date,
-                    orderMoney: order.amount,
+                    showTotalMoney: order.show_total_money,
+                    shopTotalMoney: order.shop_total_money,
+                    guideTotalMoney: order.guide_total_money,
                     contact: order.receiver,
                     tel: order.phone,
-                    orderBaseMoney: order.base_amount,
                     address: order.receiver_address,
-                    recipient: order.receiver,
-                    distribution: order.trans_type,
+                    userId: order.user_id,
+                    orderType: order.order_type_alias,
+                    transType: order.order_trans_type_alias,
                 };
             },
             paseGoodsDetail(detailList) {
                 let struct = []
                 detailList.forEach((i) => {
                     let shop = {
-                        id: i.supplier_name,
+                        subOrderNo: i.sub_order_no,
+                        supplierName: i.supplier_name,
+                        shopName: i.shop_name,
                         goodName: i.goods_name,
                         supplier_id: i.supplier_id,
                         shop_id: i.shop_id,
                         guideNickName: i.guide_nick_name,
-                        orderNo: i.sub_order_no,
-                        supplierName: i.supplier_name,
-                        shopName: i.shop_name,
-                        shopChargePerson: i.charge_person,
-                        shopChargePersonPhone: i.charge_person_phone,
+                        shopChargePerson: i.shop_charge_person,
+                        shopContract: i.shop_contract,
                         goods: [],
                     };
                     i.goodList.forEach((v) => {
                         shop.goods.push({
                             id: v.id,
-                            spec: v.spec_attr,
+                            goodsId: v.goods_id,
+                            goodsName: v.goods_name,
+                            guideNickName: v.guid_nick_name,
+                            specAttr: v.spec_attr,
                             num: v.num,
-                            money: v.goods_amount,
-                            lowMoney: v.supplier_amount,
-                            saleMoney: v.discount_amount,
-                            guideMan: v.guide_name,
+                            saleMoney: v.sale_money,
+                            payMoney: v.pay_money,
+                            shopDiscountMoney: v.shop_discount_money,
+                            platformDiscountMoney: v.platform_discount_money,
+                            platformBrokerMoney: v.platform_broker_money,
+                            shopClearMoney: v.shop_clear_money,
+                            guideBrokerMoney: v.guide_broker_money,
+                            orderStateAlias: v.order_state_alias,
+                            transCompany: v.trans_company,
+                            transNo: v.trans_no,
                         })
                     })
                     struct.push(shop)
@@ -455,6 +470,7 @@
                     };
                     let dataOrderSupplier = await getOrderSupplier(param);
                     this.supplierInfo = dataOrderSupplier.data;
+                    this.currentPageOrderNo = order.order_no;
                     // 将请求结果赋值
                 },
                 immediate: true,
