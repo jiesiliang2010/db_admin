@@ -95,13 +95,13 @@ class GoodsAuditController extends Controller
     //处理商品状态,记录操作人
     public function update(Request $request){
         $where['goods_no'] = $request->input("goods_no");
-        $save['state'] = $request->input("goods_no");
+        $save['status'] = $request->input("status");
         $save['operator_id'] = Auth::guard("admin")->id();
 
         if($save['state'] == 1){
-            $save['start_sale_at'] = time();
+            $save['start_sale_time'] = time();
         }else{
-            $save['stop_sale_at'] = time();
+            $save['stop_sale_time'] = time();
         }
 
         $res = DB::table("goods")

@@ -71,7 +71,7 @@ class UserReportController extends Controller
         $res = $query->leftJoin("users as b","a.user_id","=","b.id")
         ->leftJoin("salesman as c","a.sale_id","=","c.id")
         ->select("a.*","b.nickname as user_name","c.nickname as sale_name")
-        ->paginate(15)
+        ->paginate()
         ->toArray();
 
         $res = $this->objToArr($res);

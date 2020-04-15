@@ -53,7 +53,7 @@ class SalesmanController extends Controller
         $query = $this->filter($query,$where);
 
         $res = $query->select("a.*")
-            ->paginate(15);
+            ->paginate();
 
         return $this->ok($res);
     }
