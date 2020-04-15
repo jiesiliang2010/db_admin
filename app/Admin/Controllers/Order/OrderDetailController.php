@@ -15,6 +15,7 @@ class OrderDetailController extends Controller
     const compensateObject = [
          1 => '商家', 2 =>'平台'
     ];
+
     public function show(Request $request, Order $order){
         $orderDetail = $order->fetchOrderDetailByOrderId(request('order_id'));
         return $this->ok($orderDetail);
@@ -80,6 +81,16 @@ class OrderDetailController extends Controller
     public function showCompensateLog(Request $request)
     {
         $order_id = $request->order_id;
-        return $this->ok();
+        $compensateData = DB::table('order_compensate as oc')
+            ->join('shop as shop', 'shop.shop_id', '=', 'oc.shop_id')
+            ->join('supplier as supplier', 'supplier.supplier_id', '=', 'oc.supplier_id')
+            ->where(['oc.order_id' => $order_id])
+            ->select('oc.sub_order_no as sub_order_no', 'supplier.supplier_name','shop.shop_name','oc.reason','oc.compensate_describe','oc.compensate_amount','oc.compensate_object',DB::raw("(CASE cbd_oc.audit_state WHEN 0 THEN '已退款' when 1 then '待财务审核' when 2 then '审核通过' when 3 then '审核拒绝' else 0 END) AS audit_state"),'oc.refuse_reason')
+            ->get();
+        $resultArr = $compensateData->toArray();
+        foreach ($resultArr as &$val){
+            $val->sub_order_no = strval($val->sub_order_no);
+        }
+        return $this->ok($resultArr);
     }
 }

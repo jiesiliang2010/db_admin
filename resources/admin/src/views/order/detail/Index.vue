@@ -7,7 +7,7 @@
                     <span class="order-status">订单最新状态</span>
                     <el-button type="primary" @click="showLog()" :loading="isLoadingLog">查看日志</el-button>
                     <el-button type="warning" plain @click="returnMoneyFormVisible = true">退货</el-button>
-                    <el-button type="primary" @click="showCompensateLog()" :loading="isLoadingLog">查看赔款单</el-button>
+                    <el-button type="primary" @click="showCompensateLog();orderCompensateLogDialog = true;" :loading="isLoadingLog">查看赔款单</el-button>
                     <!--<el-button type="danger" plain @click="returnFormVisible = true;getCompensateReason();">直接退款</el-button>-->
                 </div>
             </div>
@@ -199,6 +199,25 @@
                 </el-button>
             </div>
         </el-dialog>
+        <el-dialog
+                title=""
+                :visible.sync="orderCompensateLogDialog"
+                width="78%"  style="text-align:center;" class="mustInputWainingTips">
+            <span class="pre-formatted">订单{{currentPageOrderNo}}的赔款单</span>
+            <el-table style="margin-top:10px;" :data="compensateDataLog"  @row-click="">
+                <el-table-column align="center" prop="sub_order_no" label="子订单号" width="138"/>
+                <el-table-column align="center" prop="supplier_name" label="商家" width="121">
+                </el-table-column>
+                <el-table-column align="center" prop="shop_name" label="店铺" width="121">
+                </el-table-column>
+                <el-table-column align="center" prop="reason" label="赔款原因" width="80"/>
+                <el-table-column align="center" prop="compensate_describe" label="赔款描述" width="160"/>
+                <el-table-column align="center" prop="compensate_amount" label="赔款金额" width="140"/>
+                <el-table-column align="center" prop="compensate_object" label="承担方" width="80"/>
+                <el-table-column align="center" prop="audit_state" label="状态" width="60"/>
+                <el-table-column prop="refuse_reason" label="驳回原因" width="160"  align="center" />
+            </el-table>
+        </el-dialog>
     </el-card>
 </template>
 
@@ -261,6 +280,8 @@
                 currentPageOrderNo: '',
                 currentPageSupplierName: '',
                 currentPageShopName: '',
+                orderCompensateLogDialog:false,
+                compensateDataLog:[],
             }
         },
         computed: {
@@ -279,11 +300,8 @@
                 this.isLoadingLog = false
             },
             async showCompensateLog() {
-                const {data} = await showCompensateLog({'order_id': this.$route.params.id});
-                console.log(data);
-                // this.logData = data;
-                // this.showLogDialog = true
-                // this.isLoadingLog = false
+                let compensateData = await showCompensateLog({'order_id': this.$route.params.id});
+                this.compensateDataLog = compensateData.data;
             },
             async selectChange(supplier_id) {
                 this.returnForm.shop_id = '';
